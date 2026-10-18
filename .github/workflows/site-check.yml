@@ -1,0 +1,15 @@
+name: Validate static site
+on:
+  push:
+  pull_request:
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify essential files
+        run: |
+          test -s index.html
+          test -s robots.txt
+          test -s sitemap.xml
+          grep -qi '<html' index.html
