@@ -1,15 +1,21 @@
-name: Validate static site
+name: Prepare static website
 on:
   push:
-  pull_request:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
 jobs:
-  validate:
+  verify:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Verify essential files
+      - name: Check HTML and legal pages
         run: |
           test -s index.html
+          test -s impressum.html
+          test -s datenschutz.html
           test -s robots.txt
-          test -s sitemap.xml
           grep -qi '<html' index.html
+          grep -q 'impressum.html' index.html
+          grep -q 'datenschutz.html' index.html
