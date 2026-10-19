@@ -1,2 +1,3 @@
 User-agent: *
-Disallow: /
+Allow: /
+Sitemap: https://raum-und-routine.vercel.app/sitemap.xml
