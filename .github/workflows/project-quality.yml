@@ -1,0 +1,30 @@
+name: Project quality
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: '22'
+      - name: Check JavaScript syntax
+        run: find . -name '*.js' -not -path './.git/*' -print0 | while IFS= read -r -d '' file; do node --check "$file" || exit $?; done
+      - name: Design findings (advisory)
+        shell: bash
+        run: |
+          set +e
+          node scripts/project-tools.mjs design > design-findings.json
+          result=$?
+          set -e
+          cat design-findings.json
+          if [ "$result" -eq 2 ]; then
+            echo "::warning::Design findings require review; they are not all verified defects."
+          elif [ "$result" -ne 0 ]; then
+            exit "$result"
+          fi
